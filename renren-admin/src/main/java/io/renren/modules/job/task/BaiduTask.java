@@ -10,10 +10,10 @@ package io.renren.modules.job.task;
 
 import cn.hutool.core.io.FileUtil;
 import com.baidu.aip.ocr.AipOcr;
+import io.renren.modules.oss.entity.BaiduResEntity;
 import io.renren.modules.oss.entity.SysOssEntity;
 import io.renren.modules.oss.service.BaiduResService;
 import io.renren.modules.oss.service.SysOssService;
-import io.renren.modules.sys.entity.BaiduResEntity;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.ArrayList;

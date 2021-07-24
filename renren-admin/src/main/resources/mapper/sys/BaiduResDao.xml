@@ -4,7 +4,7 @@
 <mapper namespace="io.renren.modules.sys.dao.BaiduResDao">
 
 	<!-- 可根据自己的需求，是否要使用 -->
-    <resultMap type="io.renren.modules.sys.entity.BaiduResEntity" id="baiduResMap">
+    <resultMap type="io.renren.modules.oss.entity.BaiduResEntity" id="baiduResMap">
         <result property="id" column="id"/>
         <result property="fileId" column="file_id"/>
         <result property="seq" column="seq"/>
@@ -13,6 +13,7 @@
         <result property="idNo" column="id_no"/>
         <result property="mobile" column="mobile"/>
         <result property="extInfo" column="ext_info"/>
+        <result property="checked" column="checked"/>
     </resultMap>
 
 

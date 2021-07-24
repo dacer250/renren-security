@@ -1,11 +1,15 @@
 package io.renren.modules.oss.controller;
 
+import io.renren.common.utils.PageUtils;
+import io.renren.common.utils.R;
+import io.renren.common.validator.ValidatorUtils;
+import io.renren.modules.oss.entity.BaiduResEntity;
+import io.renren.modules.oss.entity.SysOssEntity;
 import io.renren.modules.oss.service.BaiduResService;
+import io.renren.modules.oss.service.SysOssService;
 import io.renren.modules.sys.controller.vo.BaiduRes;
 import java.util.Arrays;
 import java.util.Map;
-
-import io.renren.common.validator.ValidatorUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,10 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import io.renren.modules.sys.entity.BaiduResEntity;
-import io.renren.common.utils.PageUtils;
-import io.renren.common.utils.R;
 
 
 
@@ -55,14 +55,27 @@ public class BaiduResController {
 
         return R.ok().put("baiduRes", baiduRes);
     }
+    @RequestMapping("/Nextinfo/{id}")
+    @RequiresPermissions("sys:baidures:info")
+    public R Nextinfo(@PathVariable("id") Integer id){
+        BaiduRes baiduRes = baiduResService.getByIdNextExt(id);
 
+        return R.ok().put("baiduRes", baiduRes);
+    }
+
+    @Autowired
+    SysOssService ossService;
     /**
      * 保存
      */
     @RequestMapping("/save")
     @RequiresPermissions("sys:baidures:save")
     public R save(@RequestBody BaiduResEntity baiduRes){
-        baiduResService.save(baiduRes);
+        SysOssEntity oss =ossService.getById(baiduRes.getFileId());
+        oss.setState(SysOssEntity.ST_AUDITING);
+        ossService.updateById(oss);
+        baiduRes.setChecked(1);
+        baiduResService.saveAndOss(baiduRes);
 
         return R.ok();
     }
@@ -74,7 +87,12 @@ public class BaiduResController {
     @RequiresPermissions("sys:baidures:update")
     public R update(@RequestBody BaiduResEntity baiduRes){
         ValidatorUtils.validateEntity(baiduRes);
-        baiduResService.updateById(baiduRes);
+
+        SysOssEntity oss =ossService.getById(baiduRes.getFileId());
+        oss.setState(SysOssEntity.ST_AUDITING);
+        ossService.updateById(oss);
+        baiduRes.setChecked(1);
+        baiduResService.saveAndOss(baiduRes);
         
         return R.ok();
     }

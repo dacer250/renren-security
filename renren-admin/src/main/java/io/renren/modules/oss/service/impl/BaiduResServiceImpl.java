@@ -1,6 +1,8 @@
 package io.renren.modules.oss.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.renren.modules.oss.dao.BaiduResDao;
+import io.renren.modules.oss.entity.BaiduResEntity;
 import io.renren.modules.oss.entity.SysOssEntity;
 import io.renren.modules.oss.service.BaiduResService;
 import io.renren.modules.oss.service.SysOssService;
@@ -18,8 +20,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.Query;
 
-import io.renren.modules.sys.dao.BaiduResDao;
-import io.renren.modules.sys.entity.BaiduResEntity;
 import org.springframework.util.CollectionUtils;
 
 
@@ -49,6 +49,23 @@ public class BaiduResServiceImpl extends ServiceImpl<BaiduResDao, BaiduResEntity
         "http://corona.sigma-stat.com:9000/");
     res.setUrl(url);
     return res;
+  }
+
+  @Override
+  public BaiduRes getByIdNextExt(Integer id) {
+      Integer nId =getBaseMapper().getNextId(id);
+    return getByIdExt(nId);
+  }
+
+  @Override
+  public void saveAndOss(BaiduResEntity baiduRes) {
+      updateById(baiduRes);
+      int count =getBaseMapper().countRemainUncheckd(baiduRes.getFileId());
+      if(count ==0){
+        SysOssEntity entity =ossService.getById(baiduRes.getFileId());
+        entity.setState(SysOssEntity.ST_AUDIT_OK);
+        ossService.updateById(entity);
+      }
   }
 
   @Autowired

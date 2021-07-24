@@ -10,8 +10,8 @@ package io.renren.common.utils;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
+import io.renren.modules.oss.entity.BaiduResEntity;
 import io.renren.modules.sys.controller.vo.BaiduRes;
-import io.renren.modules.sys.entity.BaiduResEntity;
 import java.io.Serializable;
 import java.util.List;
 

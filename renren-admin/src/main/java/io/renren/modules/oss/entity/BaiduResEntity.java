@@ -1,4 +1,4 @@
-package io.renren.modules.sys.entity;
+package io.renren.modules.oss.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -52,5 +52,7 @@ public class BaiduResEntity implements Serializable {
 	 * 
 	 */
 	private String extInfo;
+
+	private Integer checked;
 
 }

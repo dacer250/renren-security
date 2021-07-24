@@ -4,19 +4,20 @@ $(function () {
         datatype: "json",
         colModel: [			
 			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
-			// { label: '', name: 'fileId', index: 'file_id', width: 80,visible:false
-      //   },
-          { label: '', name: 'url', index: 'url', width: 80 , cellattr: function(rowId, tv, rawObject, cm, rdata) {
-              //合并单元格
-              return 'id=\'url' + rowId + "\'";
-              //if (Number(rowId) < 5) { return ' colspan=2' }
-            }},
+			{ label: '图片ID', name: 'file_id', index: 'file_id', width: 80,visible:false
+        },
+          { label: '', name: 'url', index: 'url', width: 80 ,  },
           { label: '', name: 'seq', index: 'seq', width: 80 },
 			{ label: '', name: 'name', index: 'name', width: 80 }, 			
 			{ label: '', name: 'sex', index: 'sex', width: 80 }, 			
 			{ label: '', name: 'idNo', index: 'id_no', width: 80 }, 			
-			{ label: '', name: 'mobile', index: 'mobile', width: 80 }, 			
-			//{ label: '', name: 'extInfo', index: 'ext_info', width: 80 ,visible:false}
+			{ label: '', name: 'mobile', index: 'mobile', width: 80 },
+          { label: '', name: 'checked', index: 'checked', width: 80, formatter: function(value, options, row){
+              return value === 1 ?
+                  '<span class="label label-success">校对OK</span>' :
+                  '<span class="label label-danger">未校对</span>';
+            }} ,
+          //{ label: '', name: 'extInfo', index: 'ext_info', width: 80 ,visible:false}
         ],
 		viewrecords: true,
         height: 385,
@@ -43,7 +44,7 @@ $(function () {
         	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" });
           var gridName = "jqGrid";
           //Merger(gridName, 'fileId');
-          Merger(gridName, 'url');
+          //Merger(gridName, 'url');
         }
     });
 });
@@ -124,9 +125,11 @@ var vm = new Vue({
                     success: function(r){
                         if(r.code === 0){
                              layer.msg("操作成功", {icon: 1});
-                             vm.reload();
-                             $('#btnSaveOrUpdate').button('reset');
-                             $('#btnSaveOrUpdate').dequeue();
+                             //vm.reload();
+                          $('#btnSaveOrUpdate').button('reset');
+                          $('#btnSaveOrUpdate').dequeue();
+                          vm.getNextInfo(vm.baiduRes.id)
+
                         }else{
                             layer.alert(r.msg);
                             $('#btnSaveOrUpdate').button('reset');
@@ -170,6 +173,11 @@ var vm = new Vue({
                 vm.baiduRes = r.baiduRes;
             });
 		},
+    getNextInfo: function(id){
+      $.get(baseURL + "sys/baidures/Nextinfo/"+id, function(r){
+        vm.baiduRes = r.baiduRes;
+      });
+    },
 		reload: function (event) {
 			vm.showList = true;
 			var page = $("#jqGrid").jqGrid('getGridParam','page');
