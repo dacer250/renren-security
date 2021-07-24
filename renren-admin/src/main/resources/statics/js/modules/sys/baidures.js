@@ -4,18 +4,19 @@ $(function () {
         datatype: "json",
         colModel: [			
 			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
-			{ label: '', name: 'fileId', index: 'file_id', width: 80,
-        cellattr: function(rowId, tv, rawObject, cm, rdata) {
-          //合并单元格
-          return 'id=\'fileId' + rowId + "\'";
-          //if (Number(rowId) < 5) { return ' colspan=2' }
-        }},
-			{ label: '', name: 'seq', index: 'seq', width: 80 }, 			
+			// { label: '', name: 'fileId', index: 'file_id', width: 80,visible:false
+      //   },
+          { label: '', name: 'url', index: 'url', width: 80 , cellattr: function(rowId, tv, rawObject, cm, rdata) {
+              //合并单元格
+              return 'id=\'url' + rowId + "\'";
+              //if (Number(rowId) < 5) { return ' colspan=2' }
+            }},
+          { label: '', name: 'seq', index: 'seq', width: 80 },
 			{ label: '', name: 'name', index: 'name', width: 80 }, 			
 			{ label: '', name: 'sex', index: 'sex', width: 80 }, 			
 			{ label: '', name: 'idNo', index: 'id_no', width: 80 }, 			
 			{ label: '', name: 'mobile', index: 'mobile', width: 80 }, 			
-			{ label: '', name: 'extInfo', index: 'ext_info', width: 80 }			
+			//{ label: '', name: 'extInfo', index: 'ext_info', width: 80 ,visible:false}
         ],
 		viewrecords: true,
         height: 385,
@@ -41,10 +42,12 @@ $(function () {
         	//隐藏grid底部滚动条
         	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" });
           var gridName = "jqGrid";
-          Merger(gridName, 'fileId');
+          //Merger(gridName, 'fileId');
+          Merger(gridName, 'url');
         }
     });
 });
+
 function Merger(gridName, CellName) {
   //得到显示到界面的id集合
   var mya = $("#" + gridName + "").getDataIDs();
@@ -66,7 +69,12 @@ function Merger(gridName, CellName) {
         break;
       }
       $("#" + CellName + "" + mya[i] + "").attr("rowspan", rowSpanTaxCount);
+
     }
+    $("#" + CellName + "" + mya[length-1] + "").click(function (){
+       vm.showPic()
+    });
+
   }
 }
 var vm = new Vue({
@@ -80,6 +88,16 @@ var vm = new Vue({
 		query: function () {
 			vm.reload();
 		},
+    showPic: function (url) {
+      layer.open({
+        type: 2,
+        title: false,
+        area: ['806px', '467px'],
+        closeBtn: 1,
+        shadeClose: false,
+        content: [url, 'no']
+      });
+    },
 		add: function(){
 			vm.showList = false;
 			vm.title = "新增";

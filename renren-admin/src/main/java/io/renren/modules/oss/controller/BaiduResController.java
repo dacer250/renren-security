@@ -1,5 +1,7 @@
-package io.renren.modules.sys.controller;
+package io.renren.modules.oss.controller;
 
+import io.renren.modules.oss.service.BaiduResService;
+import io.renren.modules.sys.controller.vo.BaiduRes;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -13,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.renren.modules.sys.entity.BaiduResEntity;
-import io.renren.modules.sys.service.BaiduResService;
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.R;
 
@@ -50,7 +51,7 @@ public class BaiduResController {
     @RequestMapping("/info/{id}")
     @RequiresPermissions("sys:baidures:info")
     public R info(@PathVariable("id") Integer id){
-        BaiduResEntity baiduRes = baiduResService.getById(id);
+        BaiduRes baiduRes = baiduResService.getByIdExt(id);
 
         return R.ok().put("baiduRes", baiduRes);
     }

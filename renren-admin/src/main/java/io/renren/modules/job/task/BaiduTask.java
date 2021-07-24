@@ -11,9 +11,9 @@ package io.renren.modules.job.task;
 import cn.hutool.core.io.FileUtil;
 import com.baidu.aip.ocr.AipOcr;
 import io.renren.modules.oss.entity.SysOssEntity;
+import io.renren.modules.oss.service.BaiduResService;
 import io.renren.modules.oss.service.SysOssService;
 import io.renren.modules.sys.entity.BaiduResEntity;
-import io.renren.modules.sys.service.BaiduResService;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ public class BaiduTask implements ITask {
   @Autowired
   BaiduResService baiduResService;
   private Logger logger = LoggerFactory.getLogger(getClass());
-
+  private static final boolean ISWIN = System.getProperty("os.name").toLowerCase().contains("win");
   @PostConstruct
   public void init() {
 
@@ -80,7 +80,12 @@ public class BaiduTask implements ITask {
         byte[] date = FileUtil.readBytes(new File(local));
         JSONObject res = client.handwriting(date, options);
         logger.info("image=" + local + " ,res=" + res);
-        FileUtil.writeString(res.toString(),new File(entity.getUrl()+".baidu"), Charset.forName("utf-8"));
+        if(ISWIN){
+          FileUtil.writeString(res.toString(),new File(entity.getUrl().replace("http://corona.sigma-stat.com/","d:/temp/ai/")+".baidu.txt"), Charset.forName("utf-8"));
+        }else{
+          FileUtil.writeString(res.toString(),new File(entity.getUrl()+".baidu.txt"), Charset.forName("utf-8"));
+
+        }
 
         JSONArray array = res.getJSONArray("words_result");
         List<String> arr = new ArrayList<>();
@@ -93,6 +98,13 @@ public class BaiduTask implements ITask {
         List<BaiduResEntity> baidu = patchUp(arr, entity.getId());
         logger.info("entityOK:"+entity.getId());
         if(!CollectionUtils.isEmpty(baidu)){
+
+          if(ISWIN){
+            FileUtil.writeString(res.toString(),new File(entity.getUrl().replace("http://corona.sigma-stat.com/","d:/temp/ai/")+".baidu.2.txt"), Charset.forName("utf-8"));
+          }else{
+            FileUtil.writeString(res.toString(),new File(entity.getUrl()+".baidu.2.txt"), Charset.forName("utf-8"));
+
+          }
           baiduResService.saveBatch(baidu);
         }
 
@@ -111,7 +123,7 @@ public class BaiduTask implements ITask {
     List<BaiduResEntity> res = new ArrayList<>();
     for (int i = 0; i < baidu.size(); i++) {
       String temp = baidu.get(i);
-      if (hasNumberMoreThan(temp, 10, 8)) {
+      if (hasNumberMoreThan(temp, 15, 12)) {
         BaiduResEntity entity = fixup(baidu, i, fileId);
         res.add(entity);
         i += 2;

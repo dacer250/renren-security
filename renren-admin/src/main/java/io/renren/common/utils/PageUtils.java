@@ -10,6 +10,8 @@ package io.renren.common.utils;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
+import io.renren.modules.sys.controller.vo.BaiduRes;
+import io.renren.modules.sys.entity.BaiduResEntity;
 import java.io.Serializable;
 import java.util.List;
 
@@ -61,6 +63,14 @@ public class PageUtils implements Serializable {
 	 */
 	public PageUtils(IPage<?> page) {
 		this.list = page.getRecords();
+		this.totalCount = (int)page.getTotal();
+		this.pageSize = (int)page.getSize();
+		this.currPage = (int)page.getCurrent();
+		this.totalPage = (int)page.getPages();
+	}
+
+	public PageUtils(IPage<BaiduResEntity> page, List<BaiduRes> res) {
+		this.list = res;
 		this.totalCount = (int)page.getTotal();
 		this.pageSize = (int)page.getSize();
 		this.currPage = (int)page.getCurrent();
