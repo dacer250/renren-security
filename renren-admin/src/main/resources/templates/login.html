@@ -76,8 +76,8 @@
 var vm = new Vue({
 	el:'#rrapp',
 	data:{
-		username: '',
-		password: '',
+		username: 'admin',
+		password: 'admin',
 		captcha: '',
 		error: false,
 		errorMsg: '',
@@ -90,7 +90,7 @@ var vm = new Vue({
 	},
 	methods: {
 		refreshCode: function(){
-			this.src = "captcha.jpg?t=" + $.now();
+			//this.src = "captcha.jpg?t=" + $.now();
 		},
 		login: function (event) {
 			var data = "username="+vm.username+"&password="+vm.password+"&captcha="+vm.captcha;

@@ -350,6 +350,7 @@
                         
             var input = document.createElement("input");
             input.setAttribute('type', 'file');
+            input.setAttribute('multiple', 'multiple');
             input.setAttribute('name', this._settings.name);
             
             addStyles(input, {
