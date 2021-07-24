@@ -20,11 +20,7 @@
 	</properties>
 
 	<dependencies>
-		<dependency>
-			<groupId>io.renren</groupId>
-			<artifactId>renren-common</artifactId>
-			<version>4.0.0</version>
-		</dependency>
+
 		<!-- 集群环境，需要打开注释 -->
 		<!--<dependency>-->
 			<!--<groupId>org.springframework.session</groupId>-->
@@ -95,12 +91,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-        <dependency>
-            <groupId>io.renren</groupId>
-            <artifactId>renren-dynamic-datasource</artifactId>
-            <version>4.0.0</version>
-            <scope>test</scope>
-        </dependency>
+
     </dependencies>
 
 	<build>

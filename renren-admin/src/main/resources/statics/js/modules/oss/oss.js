@@ -43,14 +43,13 @@ $(function () {
                 alert("云存储配置未配置");
                 return false;
             }
-            if (!(extension && /^(jpg|jpeg|png|gif)$/.test(extension.toLowerCase()))){
-                alert('只支持jpg、png、gif格式的图片！');
-                return false;
-            }
+          alert('处理中...,点击确定，稍等结果');
+
         },
+
         onComplete : function(file, r){
             if(r.code == 0){
-                alert(r.url);
+                alert(r.msg);
                 vm.reload();
             }else{
                 alert(r.msg);

@@ -19,10 +19,13 @@ import io.renren.common.validator.group.AliyunGroup;
 import io.renren.common.validator.group.QcloudGroup;
 import io.renren.common.validator.group.QiniuGroup;
 import io.renren.modules.oss.cloud.CloudStorageConfig;
+import io.renren.modules.oss.cloud.CloudStorageService;
 import io.renren.modules.oss.cloud.OSSFactory;
 import io.renren.modules.oss.entity.SysOssEntity;
 import io.renren.modules.oss.service.SysOssService;
 import io.renren.modules.sys.service.SysConfigService;
+import java.util.HashMap;
+import java.util.List;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -105,22 +108,30 @@ public class SysOssController {
 	 */
 	@RequestMapping("/upload")
 	@RequiresPermissions("sys:oss:all")
-	public R upload(@RequestParam("file") MultipartFile file) throws Exception {
-		if (file.isEmpty()) {
+	public R upload(@RequestParam("file") List<MultipartFile> files) throws Exception {
+		if (files==null ||files.size()==0) {
 			throw new RRException("上传文件不能为空");
 		}
+		Map<String,String>map =new HashMap<>();
+		int count =0;
+		for(MultipartFile file :files){
+			//上传文件
+			CloudStorageService css =OSSFactory.build();
+			String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+			String url = css.upload(file.getBytes(), file.getOriginalFilename());
 
-		//上传文件
-		String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
-		String url = OSSFactory.build().uploadSuffix(file.getBytes(), suffix);
+			//保存文件信息
+			SysOssEntity ossEntity = new SysOssEntity();
+			ossEntity.setUrl(url);
+			ossEntity.setCreateDate(new Date());
+			sysOssService.save(ossEntity);
+			map.put(file.getOriginalFilename(),url);
+			count++;
+		}
 
-		//保存文件信息
-		SysOssEntity ossEntity = new SysOssEntity();
-		ossEntity.setUrl(url);
-		ossEntity.setCreateDate(new Date());
-		sysOssService.save(ossEntity);
 
-		return R.ok().put("url", url);
+
+		return R.ok("共计上传:"+files.size()+"个文件，成功："+count+"个");
 	}
 
 
