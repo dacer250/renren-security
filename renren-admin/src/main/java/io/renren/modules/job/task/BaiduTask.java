@@ -15,6 +15,7 @@ import io.renren.modules.oss.service.SysOssService;
 import io.renren.modules.sys.entity.BaiduResEntity;
 import io.renren.modules.sys.service.BaiduResService;
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 /**
  * 测试定时任务(演示Demo，可删除)
@@ -78,6 +80,8 @@ public class BaiduTask implements ITask {
         byte[] date = FileUtil.readBytes(new File(local));
         JSONObject res = client.handwriting(date, options);
         logger.info("image=" + local + " ,res=" + res);
+        FileUtil.writeString(res.toString(),new File(entity.getUrl()+".baidu"), Charset.forName("utf-8"));
+
         JSONArray array = res.getJSONArray("words_result");
         List<String> arr = new ArrayList<>();
         for (int i = 0; i < array.length(); i++) {
@@ -88,7 +92,10 @@ public class BaiduTask implements ITask {
 
         List<BaiduResEntity> baidu = patchUp(arr, entity.getId());
         logger.info("entityOK:"+entity.getId());
-        baiduResService.saveBatch(baidu);
+        if(!CollectionUtils.isEmpty(baidu)){
+          baiduResService.saveBatch(baidu);
+        }
+
         entity.setState(SysOssEntity.ST_BAIDU_OK);
         ossService.updateById(entity);
       }catch (Exception e){
