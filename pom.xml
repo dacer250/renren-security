@@ -16,7 +16,6 @@
 	</parent>
 
     <modules>
-        <module>renren-common</module>
         <module>renren-admin</module>
         <module>renren-generator</module>
     </modules>
