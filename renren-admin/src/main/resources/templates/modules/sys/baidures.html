@@ -8,15 +8,16 @@
 <div id="rrapp" v-cloak>
     <div v-show="showList">
         <div class="grid-btn">
-			<#if shiro.hasPermission("sys:baidures:save1")>
+			<#if shiro.hasPermission("sys:baidures:save")>
             <a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
 			</#if>
-			<#if shiro.hasPermission("sys:baidures:update")>
-            <a class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;校对</a>
-			</#if>
-			<#if shiro.hasPermission("sys:baidures:delete1")>
+
+			<#if shiro.hasPermission("sys:baidures:delete")>
             <a class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
 			</#if>
+  <#if shiro.hasPermission("sys:baidures:update")>
+  <a class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;校对</a>
+  </#if>
         </div>
         <table id="jqGrid"></table>
         <div id="jqGridPager"></div>
