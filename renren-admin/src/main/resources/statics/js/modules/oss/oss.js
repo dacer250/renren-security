@@ -5,6 +5,18 @@ $(function () {
         colModel: [			
 			{ label: 'id', name: 'id', width: 20, key: true },
             { label: 'URL地址', name: 'url', width: 160 },
+          { label: '状态', name: 'state', width: 160,formatter: function(value, options, row){
+              if(value === 0)
+                 return  '<span class="label label-success">已提交</span>' ;
+              if(value === 1)
+                return  '<span class="label label-success">识别中</span>' ;
+              if(value === 2)
+                return  '<span class="label label-success">已识别待校对</span>' ;
+              if(value === 3)
+                return  '<span class="label label-success">校对中</span>' ;
+              if(value === 4)
+                return  '<span class="label label-success">完成校对</span>' ;
+            }},
 			{ label: '创建时间', name: 'createDate', width: 40 }
         ],
 		viewrecords: true,

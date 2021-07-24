@@ -8,6 +8,7 @@
 
 package io.renren.modules.oss.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.renren.common.utils.PageUtils;
@@ -15,6 +16,7 @@ import io.renren.common.utils.Query;
 import io.renren.modules.oss.dao.SysOssDao;
 import io.renren.modules.oss.entity.SysOssEntity;
 import io.renren.modules.oss.service.SysOssService;
+import java.util.List;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -31,5 +33,13 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssDao, SysOssEntity> impl
 
 		return new PageUtils(page);
 	}
-	
+
+	@Override
+	public List<SysOssEntity> listWaiting() {
+		QueryWrapper<SysOssEntity>qw =new QueryWrapper<>();
+				qw.eq("state",0);
+		qw.last(" limit 10");
+		return list(qw);
+	}
+
 }

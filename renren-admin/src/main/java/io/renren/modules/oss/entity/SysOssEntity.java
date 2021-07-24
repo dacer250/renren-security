@@ -26,9 +26,18 @@ import java.util.Date;
 @TableName("sys_oss")
 public class SysOssEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
+	public static final int ST_INIT=0;
+	public static final int ST_BAIDUING=1;
+	public static final int ST_BAIDU_OK=2;
+	public static final int ST_AUDITING=3;
+	public static final int ST_AUDIT_OK=4;
+
+
+
+
 	@TableId
-	private Long id;
+	private Integer id;
 	/**
 	 * URL地址
 	 */
@@ -38,5 +47,7 @@ public class SysOssEntity implements Serializable {
 	 */
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 	private Date createDate;
+
+	private Integer state;
 
 }

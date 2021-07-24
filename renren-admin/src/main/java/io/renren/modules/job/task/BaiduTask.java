@@ -8,9 +8,25 @@
 
 package io.renren.modules.job.task;
 
+import cn.hutool.core.io.FileUtil;
+ import com.baidu.aip.ocr.AipOcr;
+import io.renren.modules.oss.entity.SysOssEntity;
+import io.renren.modules.oss.service.SysOssService;
+import io.renren.modules.sys.entity.BaiduResEntity;
+import io.renren.modules.sys.service.BaiduResService;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import javax.annotation.PostConstruct;
+import org.apache.logging.log4j.util.Strings;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 /**
  * 测试定时任务(演示Demo，可删除)
@@ -22,9 +38,117 @@ import org.springframework.stereotype.Component;
 @Component("baiduTask")
 public class BaiduTask implements ITask {
 	private Logger logger = LoggerFactory.getLogger(getClass());
+	public static final String APP_ID = "24600154";
+	public static final String API_KEY = "4W80ukpI0zZtTVXXZnhQCXZ5";
+	public static final String SECRET_KEY = "8iIS3oa29UGcA2PfgBuVy3iaTl3pxFwG";
+
+	AipOcr client = new AipOcr(APP_ID, API_KEY, SECRET_KEY);
+	HashMap<String, String> options = new HashMap<String, String>();
+
+
+	@PostConstruct
+	public void init(){
+
+		client.setConnectionTimeoutInMillis(4000);
+		client.setSocketTimeoutInMillis(60000);
+		options.put("recognize_granularity","big");
+		options.put("probability","false");
+		options.put("detect_direction","true");
+	}
+
+@Autowired
+	SysOssService ossService;
+	@Autowired
+	BaiduResService baiduResService;
 
 	@Override
 	public void run(String params){
-		logger.debug("TestTask定时任务正在执行，参数为：{}", params);
+		logger.info("baidu启动，参数为：{}", params);
+
+		List<SysOssEntity> waits =ossService.listWaiting();
+		if(CollectionUtils.isEmpty(waits)){
+			logger.info("没有待处理的识别");
+			return ;
+		}
+		for(SysOssEntity entity:waits){
+			entity.setState(SysOssEntity.ST_BAIDUING);
+			ossService.updateById(entity);
+			String url =entity.getUrl();
+			String local=url.replace("http://corona.sigma-stat.com/images","/home/apps/corona/images/");
+			byte[]date = FileUtil.readBytes(new File(local));
+			JSONObject res = client.handwriting(date, options);
+			logger.info("image="+local+" ,res="+res);
+			JSONArray array= res.getJSONArray("words_result");
+			List<String>arr =new ArrayList<>();
+			for(int i =0;i<array.length();i++){
+				JSONObject obj =array.getJSONObject(i);
+				arr.add(obj.getString("words"));
+			}
+			arr.forEach(x->System.out.println(x));
+
+			List<BaiduResEntity> baidu =patchUp(arr,entity.getId());
+			baiduResService.saveBatch(baidu);
+			entity.setState(SysOssEntity.ST_BAIDU_OK);
+			ossService.updateById(entity);
+		}
+
+
+	}
+
+	List<BaiduResEntity> patchUp(List<String> baidu,int fileId){
+		List<BaiduResEntity> res =new ArrayList<>();
+		for(int i =0;i<baidu.size();i++){
+			String temp =baidu.get(i);
+			if(hasNumberMoreThan(temp,10,8)){
+				 BaiduResEntity entity =fixup(baidu,i,fileId);
+				 res.add(entity);
+				  i+=2;
+			}
+
+		}
+		return res;
+	}
+
+	private BaiduResEntity fixup(List<String> baidu, int idNoIndex,int fileId) {
+		String idNo =baidu.get(idNoIndex);
+		int mobileIdx =idNoIndex+1;
+		String mobile =  mobileIdx<baidu.size()? baidu.get(mobileIdx):"";
+		 int sexIdx =idNoIndex-1;
+		 String sex =sexIdx>0? baidu.get(sexIdx):"";
+		int nameIdx =sexIdx-1;
+		 String name =nameIdx>0? baidu.get(nameIdx):"";
+		 int seqIdx =nameIdx-1;
+		 String seq =seqIdx>0? baidu.get(seqIdx):"";
+		 Integer seqInt =null;
+		 try {
+			 seqInt=seq.length()<3? Integer.parseInt(seq):null;
+		 }catch (Exception e){}
+		BaiduResEntity res=new BaiduResEntity();
+		res.setFileId(fileId);
+		res.setSeq(seqInt);
+		res.setName(name);
+		res.setSex(sex);
+		res.setIdNo(idNo);
+		res.setMobile(mobile);
+		res.setExtInfo(Strings.join(  baidu.subList(seqIdx-1,mobileIdx),','));
+		return res;
+	}
+
+
+	//前10个字符，>=8个是数字
+	boolean hasNumberMoreThan(String input,Integer checkLen,int targetCount){
+
+		if(checkLen>input.length()){
+			checkLen=input.length();
+		}
+		int count=0;
+		for(int i=0;i<checkLen;i++){
+			char x =input.charAt(i);
+			if(x>='0'&& x<='9'){
+				count++;
+			}
+		}
+		return count>=targetCount;
+
 	}
 }
