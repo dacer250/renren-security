@@ -20,6 +20,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import org.springframework.util.CollectionUtils;
 
 
 @Service("sysOssService")
@@ -35,11 +36,12 @@ public class SysOssServiceImpl extends ServiceImpl<SysOssDao, SysOssEntity> impl
 	}
 
 	@Override
-	public List<SysOssEntity> listWaiting() {
+	public SysOssEntity listWaiting() {
 		QueryWrapper<SysOssEntity>qw =new QueryWrapper<>();
 				qw.eq("state",0);
-		qw.last(" limit 10");
-		return list(qw);
+		qw.last(" limit 1");
+		List<SysOssEntity>list = list(qw);
+		return CollectionUtils.isEmpty(list)?null:list.get(0);
 	}
 
 }
