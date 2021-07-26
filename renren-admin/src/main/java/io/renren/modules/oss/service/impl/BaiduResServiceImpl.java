@@ -30,7 +30,7 @@ public class BaiduResServiceImpl extends ServiceImpl<BaiduResDao, BaiduResEntity
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<BaiduResEntity> page = this.page(
                 new Query<BaiduResEntity>().getPage(params),
-                new QueryWrapper<BaiduResEntity>()
+                new QueryWrapper<BaiduResEntity>().orderByAsc("file_id")
         );
 
         IPage<BaiduRes> page2 =new Page<>();

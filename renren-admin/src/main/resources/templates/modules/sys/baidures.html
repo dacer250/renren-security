@@ -28,7 +28,7 @@
       <div style=" float:left; width:auto; border:1px solid #060">
         <img :src=" baiduRes.url " style="width: 800px;height: auto;"/>
       </div>
-        <form class="form-horizontal" style="float:left; width:400px; border:1px solid #060">
+        <form class="form-horizontal" style="float:left; width:500px; border:1px solid #060">
 														                    <div class="form-group">
                         <div class="col-sm-2 control-label">图片ID</div>
                         <div class="col-sm-10">
@@ -66,9 +66,11 @@
                         </div>
                     </div>
 											                    <div class="form-group">
-                        <div class="col-sm-2 control-label"></div>
+                        <div class="col-sm-2 control-label">识别内容</div>
                         <div class="col-sm-10">
-                            <input type="hidden" class="form-control" v-model="baiduRes.extInfo" placeholder=""/>
+                          <textarea v-model="baiduRes.extInfo" placeholder="add multiple lines" style="margin: 0px; width: 350px; height: auto;"></textarea>
+<!--                            <textarea type="text" class="form-control" v-model="baiduRes.extInfo" placeholder=""/>-->
+<!--                       -->
                         </div>
                     </div>
 							            <div class="form-group">

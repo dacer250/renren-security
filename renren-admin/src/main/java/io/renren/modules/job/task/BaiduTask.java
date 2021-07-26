@@ -76,6 +76,10 @@ public class BaiduTask implements ITask {
       ossService.updateById(entity);
       String url = entity.getUrl();
       try{
+        if(url==null){
+          logger.info("url is null :"+entity.toString());
+          continue;
+        }
         String local = url.replace("http://corona.sigma-stat.com/images", "/home/apps/corona/images/");
         byte[] date = FileUtil.readBytes(new File(local));
         JSONObject res = client.handwriting(date, options);
@@ -100,9 +104,9 @@ public class BaiduTask implements ITask {
         if(!CollectionUtils.isEmpty(baidu)){
 
           if(ISWIN){
-            FileUtil.writeString(res.toString(),new File(entity.getUrl().replace("http://corona.sigma-stat.com/","d:/temp/ai/")+".baidu.2.txt"), Charset.forName("utf-8"));
+            FileUtil.writeLines(baidu ,new File(entity.getUrl().replace("http://corona.sigma-stat.com/","d:/temp/ai/")+".baidu.2.txt"), Charset.forName("utf-8"));
           }else{
-            FileUtil.writeString(res.toString(),new File(entity.getUrl()+".baidu.2.txt"), Charset.forName("utf-8"));
+            FileUtil.writeLines(baidu,new File(entity.getUrl()+".baidu.2.txt"), Charset.forName("utf-8"));
 
           }
           baiduResService.saveBatch(baidu);
@@ -130,6 +134,13 @@ public class BaiduTask implements ITask {
       }
 
     }
+    while (res.size()<10){
+      BaiduResEntity entity =new BaiduResEntity();
+      entity.setSeq(res.size()+1);
+      entity.setFileId(fileId);
+      entity.setExtInfo(Strings.join(baidu,','));
+      res.add(entity);
+    }
     return res;
   }
 
@@ -155,7 +166,7 @@ public class BaiduTask implements ITask {
     res.setSex(sex);
     res.setIdNo(idNo);
     res.setMobile(mobile);
-    res.setExtInfo(Strings.join(baidu.subList(seqIdx - 1, mobileIdx), ','));
+    res.setExtInfo(Strings.join(baidu , ','));
     return res;
   }
 
