@@ -26,7 +26,7 @@
     <div v-show="!showList" class="panel panel-default">
 
       <div style=" float:left; width:auto; border:1px solid #060">
-        <img :src=" baiduRes.url " style="width: 800px;height: auto;"/>
+        <img @click="rot" id="imgRet" :src=" baiduRes.url " style="width: 800px;height: auto;"/>
       </div>
         <form class="form-horizontal" style="float:left; width:500px; border:1px solid #060">
 														                    <div class="form-group">

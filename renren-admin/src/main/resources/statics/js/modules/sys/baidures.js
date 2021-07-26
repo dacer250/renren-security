@@ -83,7 +83,8 @@ var vm = new Vue({
 	data:{
 		showList: true,
 		title: null,
-		baiduRes: {}
+		baiduRes: {},
+    cur: 0,
 	},
 	methods: {
 		query: function () {
@@ -98,6 +99,10 @@ var vm = new Vue({
         shadeClose: false,
         content: [url, 'no']
       });
+    },
+    rot:function(){
+      vm.cur = (vm.cur+90)%360;
+      document.getElementById('imgRet').style.transform = 'rotate('+vm.cur+'deg)';
     },
 		add: function(){
 			vm.showList = false;
