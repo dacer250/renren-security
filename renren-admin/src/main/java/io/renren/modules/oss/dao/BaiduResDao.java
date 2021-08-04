@@ -17,7 +17,7 @@ import org.apache.ibatis.annotations.Select;
 public interface BaiduResDao extends BaseMapper<BaiduResEntity> {
 
   @Select(" select a.id from baidu_res a ,sys_oss b  where "
-      + "a.file_id =b.id and b.state in(2,3) and  a.id >#{id}  and a.checked=0  order by a.id asc limit 1")
+      + "a.file_id =b.id  and  a.id >#{id}  and a.checked=0  order by a.id asc limit 1")
   Integer getNextId(@Param("id") Integer id);
 
   @Select("select count(*) from baidu_res where file_id=#{fileId} and checked=0")

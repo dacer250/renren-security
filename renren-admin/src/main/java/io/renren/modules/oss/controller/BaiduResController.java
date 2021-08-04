@@ -75,9 +75,9 @@ public class BaiduResController {
         oss.setState(SysOssEntity.ST_AUDITING);
         ossService.updateById(oss);
         baiduRes.setChecked(1);
-        baiduResService.saveAndOss(baiduRes);
+      int id=  baiduResService.saveAndOss(baiduRes);
 
-        return R.ok();
+        return R.ok().put("id",id);
     }
 
     /**

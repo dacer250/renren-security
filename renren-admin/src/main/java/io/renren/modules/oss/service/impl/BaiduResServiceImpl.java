@@ -30,7 +30,7 @@ public class BaiduResServiceImpl extends ServiceImpl<BaiduResDao, BaiduResEntity
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<BaiduResEntity> page = this.page(
                 new Query<BaiduResEntity>().getPage(params),
-                new QueryWrapper<BaiduResEntity>().orderByAsc("file_id")
+                new QueryWrapper<BaiduResEntity>().orderByAsc("file_id").orderByAsc("seq")
         );
 
         IPage<BaiduRes> page2 =new Page<>();
@@ -41,6 +41,9 @@ public class BaiduResServiceImpl extends ServiceImpl<BaiduResDao, BaiduResEntity
 
   @Override
   public BaiduRes getByIdExt(Integer id) {
+      if(id==null){
+        return new BaiduRes();
+      }
     BaiduResEntity en =getById(id);
     SysOssEntity oe =ossService.getById(en.getFileId());
     BaiduRes res =new BaiduRes();
@@ -58,14 +61,20 @@ public class BaiduResServiceImpl extends ServiceImpl<BaiduResDao, BaiduResEntity
   }
 
   @Override
-  public void saveAndOss(BaiduResEntity baiduRes) {
-      updateById(baiduRes);
+  public int saveAndOss(BaiduResEntity baiduRes) {
+      if(baiduRes.getId()==null){
+        save(baiduRes);
+      }else {
+        updateById(baiduRes);
+      }
+
       int count =getBaseMapper().countRemainUncheckd(baiduRes.getFileId());
       if(count ==0){
         SysOssEntity entity =ossService.getById(baiduRes.getFileId());
         entity.setState(SysOssEntity.ST_AUDIT_OK);
         ossService.updateById(entity);
       }
+      return baiduRes.getId().intValue();
   }
 
   @Autowired

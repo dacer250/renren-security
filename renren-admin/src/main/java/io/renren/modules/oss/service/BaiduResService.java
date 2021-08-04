@@ -22,6 +22,6 @@ public interface BaiduResService extends IService<BaiduResEntity> {
 
   BaiduRes getByIdNextExt(Integer id);
 
-  void saveAndOss(BaiduResEntity baiduRes);
+  int saveAndOss(BaiduResEntity baiduRes);
 }
 

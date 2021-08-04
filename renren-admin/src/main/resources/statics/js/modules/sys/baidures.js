@@ -6,11 +6,11 @@ $(function () {
 			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
 			{ label: '图片ID', name: 'fileId', index: 'fileId', width: 80
         },
-          { label: '', name: 'url', index: 'url', width: 80 ,  },
-          { label: '', name: 'seq', index: 'seq', width: 80 },
+          { label: '', name: 'url', index: 'url', width: 40 ,visible:false  },
+          { label: '', name: 'seq', index: 'seq', width: 50 },
 			{ label: '', name: 'name', index: 'name', width: 80 }, 			
-			{ label: '', name: 'sex', index: 'sex', width: 80 }, 			
-			{ label: '', name: 'idNo', index: 'id_no', width: 80 }, 			
+			{ label: '', name: 'sex', index: 'sex', width: 20 },
+			{ label: '', name: 'idNo', index: 'id_no', width: 100 },
 			{ label: '', name: 'mobile', index: 'mobile', width: 80 },
           { label: '', name: 'checked', index: 'checked', width: 80, formatter: function(value, options, row){
               return value === 1 ?
@@ -107,9 +107,9 @@ var vm = new Vue({
 		add: function(){
 			vm.showList = false;
 			vm.title = "新增";
+			var temp =vm.baiduRes;
 			var fid =vm.baiduRes.fileId;
-			vm.baiduRes = {fileId:fid};
-
+      vm.baiduRes = {fileId:fid,url:temp.url,seq:'',name:'',sex:'',idNo:'',mobile:''};
 		},
 		update: function (event) {
 			var id = getSelectedRow();
@@ -122,7 +122,7 @@ var vm = new Vue({
             vm.getInfo(id)
 		},
 		saveOrUpdate: function (event) {
-		    $('#btnSaveOrUpdate').button('loading').delay(1000).queue(function() {
+		    $('#btnSaveOrUpdate').button('loading').delay(20).queue(function() {
                 var url = vm.baiduRes.id == null ? "sys/baidures/save" : "sys/baidures/update";
                 $.ajax({
                     type: "POST",
@@ -132,10 +132,17 @@ var vm = new Vue({
                     success: function(r){
                         if(r.code === 0){
                              layer.msg("操作成功", {icon: 1});
+                             if(url==="sys/baidures/save"){
+                               $('#btnSaveOrUpdate').button('reset');
+                               $('#btnSaveOrUpdate').dequeue();
+                               vm.reload();
+                             }else{
+                               $('#btnSaveOrUpdate').button('reset');
+                               $('#btnSaveOrUpdate').dequeue();
+                               vm.getNextInfo(vm.baiduRes.id)
+                             }
                              //vm.reload();
-                          $('#btnSaveOrUpdate').button('reset');
-                          $('#btnSaveOrUpdate').dequeue();
-                          vm.getNextInfo(vm.baiduRes.id)
+
 
                         }else{
                             layer.alert(r.msg);
