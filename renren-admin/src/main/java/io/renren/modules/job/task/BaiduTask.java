@@ -123,7 +123,7 @@ public class BaiduTask implements ITask {
 
   }
 
-  List<BaiduResEntity> patchUp(List<String> baidu, int fileId) {
+   List<BaiduResEntity> patchUp(List<String> baidu, int fileId) {
     List<BaiduResEntity> res = new ArrayList<>();
     for (int i = 0; i < baidu.size(); i++) {
       String temp = baidu.get(i);
