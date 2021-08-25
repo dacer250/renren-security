@@ -14,6 +14,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * 云存储(支持七牛、阿里云、腾讯云、又拍云)
@@ -59,8 +61,9 @@ public  class LocalCloudStorageService extends CloudStorageService {
         try {
         File f =new File(config.getServerPath()+name);
         if(f.exists()){
+            name =getNewName(name);
+            f =new File(config.getServerPath()+name);
 
-            return null;
         }else {
             f.createNewFile();
         }
@@ -76,6 +79,14 @@ public  class LocalCloudStorageService extends CloudStorageService {
         return config.getServerUrl()+name;
     }
 
+
+    private String getNewName(String name){
+        SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd-HHmmss");
+        String date= sdf.format(new Date());
+        int idx =name.lastIndexOf(".");
+        String f =name.substring(0,idx)+date+name.substring(idx);
+        return f;
+    }
     /**
      * 文件上传
      * @param data     文件字节数组
